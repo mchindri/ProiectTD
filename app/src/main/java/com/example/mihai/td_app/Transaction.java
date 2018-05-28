@@ -4,13 +4,13 @@ public class Transaction {
     private int transaction_id;
     private String bank_account;
     private String car_number;
-    private String station_id;
-    private int price;
-    private int at_date;
+    private int station_id;
+    private float price;
+    private String at_date;
 
     public Transaction(){};
 
-    public Transaction(String bank_account, String car_number, String station_id, int price, int at_date) {
+    public Transaction(String bank_account, String car_number, int station_id, float price, String at_date) {
         this.bank_account = bank_account;
         this.car_number = car_number;
         this.station_id = station_id;
@@ -18,7 +18,7 @@ public class Transaction {
         this.at_date = at_date;
     }
 
-    public Transaction(int transaction_id, String bank_account, String car_number, String station_id, int price, int at_date) {
+    public Transaction(int transaction_id, String bank_account, String car_number, int station_id, float price, String at_date) {
         this.transaction_id = transaction_id;
         this.bank_account = bank_account;
         this.car_number = car_number;
@@ -41,15 +41,15 @@ public class Transaction {
         this.car_number = car_number;
     }
 
-    public void setStation_id(String station_id) {
+    public void setStation_id(int station_id) {
         this.station_id = station_id;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
-    public void setAt_date(int at_date) {
+    public void setAt_date(String at_date) {
         this.at_date = at_date;
     }
 
@@ -67,15 +67,15 @@ public class Transaction {
         return car_number;
     }
 
-    public String getStation_id() {
+    public int getStation_id() {
         return station_id;
     }
 
-    public int getPrice() {
+    public float getPrice() {
         return price;
     }
 
-    public int getAt_date() {
+    public String getAt_date() {
         return at_date;
     }
 }

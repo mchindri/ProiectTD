@@ -8,18 +8,17 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
 
+import java.util.ArrayList;
+
 class MyInfoAdapter implements InfoWindowAdapter {
 
-    int total;
-    int avalible;
-    int reserved;
-    int busy;
-
+    private ArrayList<Station> stations;
     private Context context;
 
-    public MyInfoAdapter(Context context)
+    public MyInfoAdapter(Context context, ArrayList stations)
     {
         this.context = context;
+        this.stations = stations;
     }
 
     @Override
@@ -29,13 +28,25 @@ class MyInfoAdapter implements InfoWindowAdapter {
 
     @Override
     public View getInfoContents(Marker marker) {
+        int total;
+        int reserved = 0;
+        int busy = 0;
+        int available = 0;
 
-
-        total = 10;
-        reserved = 2;
-        busy = 5;
-        avalible = total - reserved - busy;
-
+        stations = refreshStations();
+        if (stations != null)
+        {
+            for(Station s : stations)
+            {
+                if (s.getName().equals(marker.getTitle()))
+                {
+                    total = s.getAvailable();
+                    reserved = s.getReserved();
+                    busy = s.getOccupied();
+                    available = total - reserved - busy;
+                }
+            }
+        }
         View view = ((Activity)context).getLayoutInflater()
                 .inflate(R.layout.info_window, null);
 
@@ -45,7 +56,7 @@ class MyInfoAdapter implements InfoWindowAdapter {
         TextView tvBusy = view.findViewById(R.id.BusyNb);
 
         tvTitle.setText(marker.getTitle());
-        tvAvailable.setText(String.valueOf(avalible));
+        tvAvailable.setText(String.valueOf(available));
         tvReserved.setText(String.valueOf(reserved));
         tvBusy.setText(String.valueOf(busy));
 
@@ -57,5 +68,13 @@ class MyInfoAdapter implements InfoWindowAdapter {
 
 
         return view;
+    }
+
+    private ArrayList<Station> refreshStations() {
+        ArrayList<Station> newStations;
+        newStations = MainActivity.db.getAllStations();
+        if (newStations == null)
+            return stations;
+        return newStations;
     }
 }

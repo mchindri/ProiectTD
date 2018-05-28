@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,36 +32,17 @@ public class MapsActivity extends FragmentActivity implements
 
     private GoogleMap mMap;
     private WeakHashMap mMarkers = new WeakHashMap<Marker, String>();
+    private ArrayList<Station> stations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-
-        /*
-        GoogleApiAvailability obj = GoogleApiAvailability.getInstance();
-        int val = obj.isGooglePlayServicesAvailable(this);
-        if (val != SUCCESS) {
-            String msg = "Error on service availability";
-            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-        }
-        */
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -68,29 +50,25 @@ public class MapsActivity extends FragmentActivity implements
         initializeMarkers();
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(46.770039, 23.594263), 16.0f));
 
-        MyInfoAdapter myAdapter = new MyInfoAdapter(this);
+        MyInfoAdapter myAdapter = new MyInfoAdapter(this, stations);
         mMap.setInfoWindowAdapter(myAdapter);
 
-        //LatLng sydney = new LatLng(-34, 151);
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     private void initializeMarkers()
     {
-        HashMap coords = new HashMap<String, LatLng>();
-        coords.put("Teatru", new LatLng(46.769233, 23.597368));
-        coords.put("Eroiilor", new LatLng(46.770039, 23.594263));
-        coords.put("Avram Iancu", new LatLng(46.771523, 23.596130));
-
-        Iterator itr = coords.entrySet().iterator();
-        while(itr.hasNext())
+        stations = MainActivity.db.getAllStations();
+        if (stations == null)
         {
-            Map.Entry<String, LatLng> entry = (Map.Entry<String, LatLng>) itr.next();
+            Toast.makeText(this, "No stations avalible", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        for(Station s : stations)
+        {
             Marker m = mMap.addMarker(new MarkerOptions()
-                    .position(entry.getValue())
-                    .title(entry.getKey()));
-            mMarkers.put(m, entry.getKey());
+                    .position(s.getCoords())
+                    .title(s.getName()));
+            mMarkers.put(m, s.getName());
             mMap.setOnMarkerClickListener(this);
         }
     }

@@ -65,9 +65,4 @@ public class User {
     public String getCar_number() {
         return car_number;
     }
-
-    public String toString()
-    {
-        return username + " have car " + car_number;
-    }
 }
